@@ -24,7 +24,6 @@ public class FieldOfView : MonoBehaviour
     public MeshFilter ViewMeshFilter;
     private Mesh _viewMesh;
 
-    ViewCastInfo oldViewCast = new ViewCastInfo();
 
     public float EdgeDistanceThreshold;
 
@@ -87,6 +86,7 @@ public class FieldOfView : MonoBehaviour
 
         List<Vector3> viewPoints = new List<Vector3>();
 
+        ViewCastInfo oldViewCast = new ViewCastInfo();
 
         for (int i = 0; i < stepCount; i++)
         {
