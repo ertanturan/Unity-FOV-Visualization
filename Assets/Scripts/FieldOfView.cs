@@ -16,9 +16,16 @@ public class FieldOfView : MonoBehaviour
 
     private WaitForSeconds _delay;
 
+    public float MeshResolution;
+
     private void Start()
     {
         StartCoroutine("FindVisibleTargetsWithDelay", .2f);
+    }
+
+    private void Update()
+    {
+        DrawFieldOfView();
     }
 
     IEnumerator FindVisibleTargetsWithDelay(float delay)
@@ -54,6 +61,23 @@ public class FieldOfView : MonoBehaviour
 
             }
         }
+
+    }
+
+    private void DrawFieldOfView()
+    {
+        int stepCount = Mathf.RoundToInt(ViewAngle * MeshResolution);
+        float stepAngleSize = ViewAngle / stepCount;
+
+
+        for (int i = 0; i < stepCount; i++)
+        {
+            float angle = transform.eulerAngles.y - ViewAngle / 2 + stepAngleSize * i;
+
+            Debug.DrawLine(transform.position, transform.position + DirFromAngle(angle, true) * ViewRadius, Color.red);
+        }
+
+
 
     }
 
