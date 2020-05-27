@@ -17,12 +17,16 @@ public class FieldOfView : MonoBehaviour
     private WaitForSeconds _delay;
 
     public float MeshResolution;
-
+    public int EdgeResolveIterations = 1;
     private ViewCastInfo _viewCastInfo;
 
 
     public MeshFilter ViewMeshFilter;
     private Mesh _viewMesh;
+
+    ViewCastInfo oldViewCast = new ViewCastInfo();
+
+    public float EdgeDistanceThreshold;
 
     private void Start()
     {
@@ -83,14 +87,39 @@ public class FieldOfView : MonoBehaviour
 
         List<Vector3> viewPoints = new List<Vector3>();
 
+
         for (int i = 0; i < stepCount; i++)
         {
             float angle = transform.eulerAngles.y - ViewAngle / 2 + stepAngleSize * i;
-
-            //Debug.DrawLine(transform.position, transform.position + DirFromAngle(angle, true) * ViewRadius, Color.red);
-
+            //Debug.DrawLine(transform.position, transform.position + DirFromAngle(angle, true) * ViewRadius, Color.black);
             ViewCastInfo newCast = ViewCast(angle);
+
+
+            if (i > 0)
+            {
+
+                bool edgeThresholdExceed = Mathf.Abs(oldViewCast.Dist - newCast.Dist) > EdgeDistanceThreshold;
+
+
+                if (oldViewCast.Hit != newCast.Hit || oldViewCast.Hit && newCast.Hit && edgeThresholdExceed)
+                {
+                    //find the edge to prevent edge jittering
+
+                    EdgeInfo edge = FindEdge(oldViewCast, newCast);
+                    if (edge.pointA != Vector3.zero)
+                    {
+                        viewPoints.Add(edge.pointA);
+                    }
+                    if (edge.pointB != Vector3.zero)
+                    {
+                        viewPoints.Add(edge.pointB);
+                    }
+                }
+            }
+
             viewPoints.Add(newCast.Point);
+
+            oldViewCast = newCast;
         }
 
         int vertexCount = viewPoints.Count + 1;
@@ -161,6 +190,37 @@ public class FieldOfView : MonoBehaviour
         return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
     }
 
+    private EdgeInfo FindEdge(ViewCastInfo minCast, ViewCastInfo maxCast)
+    {
+        float minAngle = minCast.Angle;
+        float maxAngle = maxCast.Angle;
 
+        Vector3 minPoint = Vector3.zero;
+        Vector3 maxPoint = Vector3.zero;
+
+        for (int i = 0; i < EdgeResolveIterations; i++)
+        {
+            float angle = (minAngle + maxAngle) / 2;
+            ViewCastInfo newCast = ViewCast(angle);
+
+            bool edgeThresholdExceed = Mathf.Abs(minCast.Dist - newCast.Dist) > EdgeDistanceThreshold;
+
+            if (newCast.Hit == minCast.Hit && !edgeThresholdExceed)
+            {
+                minAngle = angle;
+                minPoint = newCast.Point;
+            }
+            else
+            {
+                maxAngle = angle;
+                maxPoint = newCast.Point;
+            }
+        }
+
+
+        return new EdgeInfo(minPoint, maxPoint);
+
+
+    }
 
 }
