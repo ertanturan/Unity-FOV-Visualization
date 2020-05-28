@@ -1606,8 +1606,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cd1b23813d0d454f951682280dffae4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ViewRadius: 12
-  ViewAngle: 60
+  ViewRadius: 20
+  ViewAngle: 90
   TargetMask:
     serializedVersion: 2
     m_Bits: 1024
@@ -1837,7 +1837,7 @@ Transform:
   m_GameObject: {fileID: 2145257764}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 5, y: 5, z: 2.5}
+  m_LocalScale: {x: 20.9565, y: 5, z: 19.9515}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
